@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_17_135358) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_17_162200) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -43,7 +43,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_17_135358) do
     t.index ["tenant_id", "account_id", "currency", "amount_cents", "posting_ts"], name: "idx_raw_lines_near_dup_lookup"
     t.index ["tenant_id", "source_id"], name: "idx_unique_raw_source_per_tenant", unique: true, where: "(source_id IS NOT NULL)"
     t.index ["tenant_id"], name: "index_raw_statement_lines_on_tenant_id"
-    t.check_constraint "currency::text = ANY (ARRAY['USD'::character varying, 'EUR'::character varying, 'GBP'::character varying, 'JPY'::character varying, 'CHF'::character varying]::text[])", name: "chk_raw_currency"
+    t.check_constraint "currency::text = ANY (ARRAY['USD'::character varying::text, 'EUR'::character varying::text, 'GBP'::character varying::text, 'JPY'::character varying::text, 'CHF'::character varying::text])", name: "chk_raw_currency"
   end
 
   create_table "reconciled_movements", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -65,7 +65,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_17_135358) do
     t.index ["tenant_id", "account_id", "currency", "amount_cents", "posting_ts"], name: "idx_reconciled_movements_near_dup_window"
     t.index ["tenant_id", "account_id", "currency", "value_date"], name: "idx_reconciled_movements_balance_query"
     t.index ["tenant_id"], name: "index_reconciled_movements_on_tenant_id"
-    t.check_constraint "currency::text = ANY (ARRAY['USD'::character varying, 'EUR'::character varying, 'GBP'::character varying, 'JPY'::character varying, 'CHF'::character varying]::text[])", name: "chk_rec_currency"
+    t.check_constraint "currency::text = ANY (ARRAY['USD'::character varying::text, 'EUR'::character varying::text, 'GBP'::character varying::text, 'JPY'::character varying::text, 'CHF'::character varying::text])", name: "chk_rec_currency"
   end
 
   create_table "sessions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -101,7 +101,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_17_135358) do
     t.string "password_digest", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "tenant_id", null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.index ["tenant_id"], name: "index_users_on_tenant_id"
   end
 
   add_foreign_key "accounts", "tenants"
@@ -114,4 +116,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_17_135358) do
   add_foreign_key "sessions", "users"
   add_foreign_key "user_tenant_memberships", "tenants"
   add_foreign_key "user_tenant_memberships", "users"
+  add_foreign_key "users", "tenants"
 end

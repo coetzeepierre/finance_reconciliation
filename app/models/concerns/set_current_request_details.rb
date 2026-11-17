@@ -8,9 +8,11 @@ module SetCurrentRequestDetails
   private
 
   def set_current_tenant
-    if current_user
-      # For v1, resolve the user's primary or active tenant membership
-      Current.tenant = current_user.tenants.first || Tenant.first
+    if Current.user
+      # Picks their first authorized tenant membership, or falls back if unassigned
+      Current.tenant = Current.user.tenants.first || Tenant.first
+    else
+      Current.tenant = Tenant.first
     end
   end
 end
