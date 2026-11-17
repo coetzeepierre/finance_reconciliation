@@ -6,6 +6,7 @@ class CreateAccounts < ActiveRecord::Migration[8.1]
       t.string :business_unit
 
       t.timestamps
+      t.index [:tenant_id, :account_number], unique: true
     end
   end
 end
