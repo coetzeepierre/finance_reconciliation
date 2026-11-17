@@ -1,30 +1,38 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Ripple Reconciliation" %></title>
+    <title></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Ripple Reconciliation">
-    <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= yield :head %>
-
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
-
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <main class="container mx-auto mt-28 px-5 flex">
+  <body class="min-h-screen bg-gray-50 text-gray-900 flex flex-col font-sans">
+    <!-- Main Header -->
+    <header class="border-b border-gray-200 bg-white shadow-sm">
+      <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+        <!-- Logo / Brand -->
+        <%= link_to root_path, class: "text-lg font-bold tracking-tight text-gray-900 hover:text-blue-600 transition" do %>
+
+        <% end %>
+
+        <!-- Auth Navigation Links -->
+        <nav class="flex items-center gap-4 text-sm font-medium">
+          <% if authenticated? %>
+            <span class="text-xs text-gray-500 hidden sm:inline">Logged in</span>
+            <%= link_to "Logout", logout_path, data: { turbo_method: :delete }, class: "text-gray-600 hover:text-red-600 transition" %>
+          <% else %>
+            <%= link_to "Login", login_path, class: "rounded-md bg-blue-600 px-3 py-1.5 text-white hover:bg-blue-500 transition shadow-sm" %>
+          <% end %>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="mx-auto max-w-7xl w-full flex-1 px-4 py-8 sm:px-6 lg:px-8">
       <%= yield %>
     </main>
   </body>
