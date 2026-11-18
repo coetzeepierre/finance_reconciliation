@@ -3,12 +3,15 @@ module Api
     class ReconciledBalancesController < ApplicationController
       before_action :authenticate_user!
 
+      rescue_from ArgumentError, with: :handle_bad_request
+      rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
+
       def show
         @account = Current.tenant.accounts.find(params[:account_id])
         raise ActiveRecord::RecordNotFound unless AccountPolicy.new(Current.user, @account).show?
 
         from_date = params[:from].presence ? Date.parse(params[:from]) : 30.days.ago.to_date
-        to_date = params[:to].presence ? Date.parse(params[:to]) : Date.current
+        to_date   = params[:to].presence   ? Date.parse(params[:to])   : Date.current
 
         balances = ReconciledBalanceQuery.new(
           tenant: Current.tenant,
@@ -43,6 +46,16 @@ module Api
             }
           }
         }
+      end
+
+      private
+
+      def record_not_found(exception)
+        render json: { error: exception.message }, status: :not_found
+      end
+
+      def handle_bad_request(exception)
+        render json: { error: exception.message }, status: :bad_request
       end
     end
   end

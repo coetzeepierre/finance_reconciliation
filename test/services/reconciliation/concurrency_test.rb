@@ -7,18 +7,13 @@ module Reconciliation
     setup do
       ReconciledMovement.delete_all
       RawStatementLine.delete_all
-      Account.delete_all
-      Tenant.delete_all
-
-      @tenant = Tenant.create!(name: "Acme Treasury", slug: "acme-treasury")
-      @account = @tenant.accounts.create!(account_number: "ACC-01", business_unit: "Americas Treasury")
+      @tenant = tenants(:acme)
+      @account = accounts(:americas_treasury)
     end
 
     teardown do
       ReconciledMovement.delete_all
       RawStatementLine.delete_all
-      Account.delete_all
-      Tenant.delete_all
     end
 
     test "concurrent exact re-deliveries with same source_id create only one movement" do

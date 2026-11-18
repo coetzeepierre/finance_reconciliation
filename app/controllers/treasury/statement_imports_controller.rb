@@ -14,10 +14,11 @@ module Treasury
           file_path: params[:file]
         )
 
-        if service.call
+        begin
+          service.call
           redirect_to treasury_account_path(@account), notice: "Statement successfully parsed and reconciled."
-        else
-          flash.now[:alert] = "Failed to process the CSV file."
+        rescue ArgumentError => e
+          flash.now[:alert] = "Failed to process file: #{e.message}"
           render :new, status: :unprocessable_entity
         end
       else

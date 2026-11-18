@@ -84,8 +84,9 @@ module Ingestion
 
     def parse_amount_cents(raw_amount, currency)
       cleaned = raw_amount.to_s.gsub(/[^\d.\-]/, "")
-      raise ArgumentError, "Invalid amount format" if cleaned.blank?
+      raise ArgumentError, "Unparseable amount: #{raw_amount.inspect}" if cleaned.blank?
 
+      # Monetize.parse! handles currency subunit exponents (0 for JPY, 2 for USD/EUR/GBP)
       Monetize.parse!(cleaned, currency).cents
     end
 
@@ -98,10 +99,10 @@ module Ingestion
         if str.match?(%r{\A\d{2}/\d{2}/\d{4}\z})
           Date.strptime(str, "%d/%m/%Y")
         else
-          Date.parse(str) rescue nil
+          Date.iso8601(str)
         end
       else
-        nil
+        raise ArgumentError, "Unparseable date: #{raw_date.inspect}"
       end
     end
 

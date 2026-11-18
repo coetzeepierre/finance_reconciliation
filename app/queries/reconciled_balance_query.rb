@@ -10,15 +10,16 @@ class ReconciledBalanceQuery
   def call
     raise ArgumentError, "from_date must be <= to_date" if @from_date > @to_date
 
+    # Only query currencies that exist in reconciled ledger
     base_scope = ReconciledMovement.where(tenant_id: @tenant.id, account_id: @account.id)
     currencies = base_scope.distinct.pluck(:currency).sort
 
     currencies.map do |currency|
       currency_scope = base_scope.where(currency: currency)
 
-      opening_cents = currency_scope.where("value_date < ?", @from_date).sum(:amount_cents)
+      opening_cents    = currency_scope.where("value_date < ?", @from_date).sum(:amount_cents)
       period_net_cents = currency_scope.where(value_date: @from_date..@to_date).sum(:amount_cents)
-      closing_cents = opening_cents + period_net_cents
+      closing_cents    = opening_cents + period_net_cents
 
       raw_period_scope = RawStatementLine.where(
         tenant_id: @tenant.id,
