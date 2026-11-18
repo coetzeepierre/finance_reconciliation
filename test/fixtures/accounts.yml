@@ -1,0 +1,5 @@
+# test/fixtures/accounts.yml
+americas_treasury:
+  tenant: acme
+  account_number: "acme-treasury-ACC-01"
+  business_unit: "Americas Treasury"

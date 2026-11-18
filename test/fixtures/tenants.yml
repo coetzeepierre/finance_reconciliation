@@ -1,0 +1,4 @@
+acme:
+  name: Acme Treasury
+  slug: acme-treasury
+  shard: default

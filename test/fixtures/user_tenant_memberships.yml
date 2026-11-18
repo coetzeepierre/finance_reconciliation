@@ -1,0 +1,4 @@
+membership_one:
+  user: alice
+  tenant: acme
+  role: admin
