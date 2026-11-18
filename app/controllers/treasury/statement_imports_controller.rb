@@ -3,26 +3,18 @@ module Treasury
     before_action :set_account
 
     def new
-      # Renders the upload form
     end
 
     def create
-      if params[:file].present?
-        service = Ingestion::ParseSpreadsheetService.new(
+      begin
+        Ingestion::ParseStatementFileService.call(
+          file_path: params[:file],
           target_tenant: Current.tenant,
-          target_account: @account,
-          file_path: params[:file]
+          target_account: @account
         )
-
-        begin
-          service.call
-          redirect_to treasury_account_path(@account), notice: "Statement successfully parsed and reconciled."
-        rescue ArgumentError => e
-          flash.now[:alert] = "Failed to process file: #{e.message}"
-          render :new, status: :unprocessable_entity
-        end
-      else
-        flash.now[:alert] = "Please select a CSV file to upload."
+        redirect_to treasury_account_path(@account), notice: "Statement successfully imported and reconciled."
+      rescue ArgumentError => e
+        flash.now[:alert] = "Failed to parse statement: #{e.message}"
         render :new, status: :unprocessable_entity
       end
     end

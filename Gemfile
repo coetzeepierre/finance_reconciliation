@@ -60,6 +60,8 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
+  gem "simplecov", "~> 1.3", require: false
+  gem "minitest-mock", "~> 5.27", require: false
 end
 
 gem "money-rails", "~> 3.0"

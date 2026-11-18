@@ -171,6 +171,7 @@ GEM
     minitest (6.1.0)
       drb (~> 2.0)
       prism (>= 1.5, < 3)
+    minitest-mock (5.27.0)
     monetize (2.0.1)
       money (~> 7.0)
     money (7.1.1)
@@ -305,6 +306,7 @@ GEM
       logger (~> 1.4)
       rubyzip (>= 1.2.2, < 4.0)
       websocket (~> 1.0)
+    simplecov (1.3.2)
     solid_cable (4.1.0)
       actioncable (>= 7.2)
       activejob (>= 7.2)
@@ -387,6 +389,7 @@ DEPENDENCIES
   image_processing (~> 1.2)
   importmap-rails
   kamal
+  minitest-mock (~> 5.27)
   money-rails (~> 3.0)
   pg (~> 1.1)
   propshaft
@@ -394,6 +397,7 @@ DEPENDENCIES
   rails (~> 8.1.4, >= 8.1.4.1)
   roo (~> 4.0)
   selenium-webdriver
+  simplecov (~> 1.3)
   solid_cable
   solid_cache
   solid_queue
@@ -465,6 +469,7 @@ CHECKSUMS
   mini_magick (5.4.0) sha256=f120af581d9ed4ec52c57f35a67a605d112bb1d8f582d1415b147fda42d11d78
   mini_mime (1.1.5) sha256=8681b7e2e4215f2a159f9400b5816d85e9d8c6c6b491e96a12797e798f8bccef
   minitest (6.1.0) sha256=ff373595aa8888631e8a5463986a76b3845346ae6d7fa46e139c1633d418076e
+  minitest-mock (5.27.0) sha256=7040ed7185417a966920987eaa6eaf1be4ea1fc5b25bb03ff4703f98564a55b0
   monetize (2.0.1) sha256=7b303fb61bd6dff6acce836378fee91bcb5e3037f0f2c3e6660584b250584cf2
   money (7.1.1) sha256=8ed5cd99dfbc45e82688ea711cb59ea3c396c2608cd88876502b164c90269d4e
   money-rails (3.0.0) sha256=f4bd1c8e1c98d221e7bf452eeb52e240f41224e43da2a477a5659a87c0c95bae
@@ -523,6 +528,7 @@ CHECKSUMS
   rubyzip (3.7.0) sha256=65c19294da75297a939006f3516deacc33185fbd721ff1954f7a231db6d3e121
   securerandom (0.4.1) sha256=cc5193d414a4341b6e225f0cb4446aceca8e50d5e1888743fac16987638ea0b1
   selenium-webdriver (4.52.0) sha256=5d45ba100ea8b57f5a8c25979a636d48b4c60c39973478930d78e884bdeecd2d
+  simplecov (1.3.2) sha256=2a22ec1759f1b8db60881a2e038758956fc69ef93ed669be0bde0678de6d0e85
   solid_cable (4.1.0) sha256=828e3d509207b82b4f05f4e9c85f696994710679b52d511aa7f97ebd212d3226
   solid_cache (1.0.10) sha256=bc05a2fb3ac78a6f43cbb5946679cf9db67dd30d22939ededc385cb93e120d41
   solid_queue (1.7.2) sha256=a22685e1d2ee14ce7b4e5d4592c9d8e837951884c51555609dee58679ed03325

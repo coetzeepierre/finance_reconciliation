@@ -57,8 +57,10 @@ module Reconciliation
          !ReconciledMovement.exists?(reversal_of_id: original_movement.id)
         raw_line.update!(status: :reversal)
         create_ledger_movement!(reversal_of_id: original_movement.id)
+        Rails.logger.info "[Reconciliation] Line #{raw_line.id} reconciled as REVERSAL of movement #{original_movement.id} (Tenant: #{tenant.slug}, Account: #{account.account_number})"
       else
         raw_line.update!(status: :unmatched_reversal)
+        Rails.logger.warn "[Reconciliation] Unmatched reversal encountered for target_id '#{target_reversal_source_id}' on line #{raw_line.id} (Tenant: #{tenant.slug})"
       end
     end
 

@@ -1,22 +1,35 @@
-# app/services/ingestion/parse_spreadsheet_service.rb
+# app/services/ingestion/parse_statement_file_service.rb
 require "roo"
 
 module Ingestion
-  class ParseSpreadsheetService
+  class ParseStatementFileService
     SUPPORTED_CURRENCIES = %w[USD EUR GBP JPY CHF].freeze
 
-    def self.call(file_path:, target_tenant:, target_account: nil)
-      new(file_path: file_path, target_tenant: target_tenant, target_account: target_account).call
+    def self.call(file_path:, target_tenant:, target_account: nil, original_filename: nil)
+      new(
+        file_path: file_path,
+        target_tenant: target_tenant,
+        target_account: target_account,
+        original_filename: original_filename
+      ).call
     end
 
-    def initialize(file_path:, target_tenant:, target_account: nil)
+    def initialize(file_path:, target_tenant:, target_account: nil, original_filename: nil)
+
+      raise ArgumentError, "Missing file to process" if file_path.blank?
+
       @file_path = file_path
       @target_tenant = target_tenant
       @target_account = target_account
+      @original_filename = original_filename || file_path
     end
 
     def call
-      spreadsheet = Roo::Spreadsheet.open(@file_path, extension: :xlsx)
+      Rails.logger.info "[Ingestion] Starting statement file ingestion for tenant '#{@target_tenant.slug}' (File: #{@original_filename})"
+
+      ext = File.extname(@original_filename).delete(".").downcase.to_sym
+      # Roo can auto-detect CSV, XLS, and XLSX by extension:
+      spreadsheet = Roo::Spreadsheet.open(@file_path, extension: ext)
       spreadsheet.default_sheet = spreadsheet.sheets.first
 
       header = spreadsheet.row(1).map { |h| h.to_s.strip.underscore.to_sym }
@@ -28,7 +41,10 @@ module Ingestion
 
         # 1. Enforce Tenant Isolation: Skip rows that do not belong to the target authenticated tenant
         row_tenant_slug = row[:tenant].to_s.strip.downcase
-        next unless row_tenant_slug == @target_tenant.slug
+        unless row_tenant_slug == @target_tenant.slug
+          Rails.logger.debug "[Ingestion] Skipping row belonging to external tenant '#{row_tenant_slug}' (Target: #{@target_tenant.slug})"
+          next
+        end
 
         # 2. Match or locate account strictly scoped to target_tenant
         account_number = row[:account].to_s.strip
@@ -51,7 +67,7 @@ module Ingestion
           currency: currency,
           amount_cents: amount_cents,
           value_date: parse_value_date(row[:value_date]),
-          posting_ts: parse_posting_ts(row[:posting_ts]),
+          posting_ts: parse_value_date(row[:posting_ts]),
           category: row[:category].to_s.strip.presence,
           description: row[:description].to_s.strip.presence
         )
@@ -96,27 +112,22 @@ module Ingestion
         raw_date.to_date
       when String
         str = raw_date.strip
+        return nil if str.blank?
+
         if str.match?(%r{\A\d{2}/\d{2}/\d{4}\z})
           Date.strptime(str, "%d/%m/%Y")
         else
-          Date.iso8601(str)
+          begin
+            Date.iso8601(str)
+          rescue ArgumentError, Date::Error
+            Date.parse(str)
+          end
         end
       else
         raise ArgumentError, "Unparseable date: #{raw_date.inspect}"
       end
-    end
-
-    def parse_posting_ts(raw_ts)
-      case raw_ts
-      when DateTime, Time
-        raw_ts.in_time_zone
-      when Date
-        raw_ts.to_time.in_time_zone
-      when String
-        Time.zone.parse(raw_ts.strip)
-      else
-        Time.current
-      end
+    rescue ArgumentError, Date::Error
+      raise ArgumentError, "Unparseable date: #{raw_date.inspect}"
     end
   end
 end

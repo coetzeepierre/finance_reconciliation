@@ -1,6 +1,6 @@
 <div class="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
   <div class="mb-6">
-    <h1 class="text-2xl font-bold text-gray-900">Upload Statement CSV</h1>
+    <h1 class="text-2xl font-bold text-gray-900">Upload Statement</h1>
     <p class="text-sm text-gray-600">Account: <%= @account.account_number %> (<%= @account.business_unit %>)</p>
   </div>
 
@@ -16,7 +16,7 @@
             <div class="flex text-sm text-gray-600">
               <label for="file" class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
                 <span>Upload a file</span>
-                <%= file_field_tag :file, id: "file", accept: ".xlsx", class: "sr-only" %>
+                <%= file_field_tag :file, id: "file", accept: ".xlsx,.csv", class: "sr-only" %>
               </label>
               <p class="pl-1">or drag and drop</p>
             </div>
