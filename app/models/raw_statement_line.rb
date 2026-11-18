@@ -42,8 +42,10 @@ class RawStatementLine < ApplicationRecord
       )
 
       if result.rows.any?
+        # winning POSTGRESQL thread safety ensures ONE insert tied to POSTGRESQL UPSERT
         [find(result.rows.first.first), true]
       else
+        # losing thread - look up existing on FAIL DO NOTHING - only one ever inserted!
         [find_by!(tenant_id: tenant.id, source_id: source_id), false]
       end
     else
