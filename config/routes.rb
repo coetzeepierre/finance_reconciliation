@@ -8,8 +8,9 @@ Rails.application.routes.draw do
   resources :passwords, param: :token
 
   namespace :treasury do
-    resources :accounts, only: [:index, :show]
-    resources :statement_imports, only: [:create]
+    resources :accounts, only: [:index, :show] do
+      resource :statement_import, only: [:new, :create]
+    end
   end
 
   namespace :api do

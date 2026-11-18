@@ -22,6 +22,7 @@
         <!-- Auth Navigation Links -->
         <nav class="flex items-center gap-4 text-sm font-medium">
           <% if authenticated? %>
+            <%= link_to "All Accounts", treasury_accounts_path, class: "text-gray-600 hover:text-red-600 transition" %>
             <span class="text-xs text-gray-500 hidden sm:inline">Logged in</span>
             <%= link_to "Logout", logout_path, data: { turbo_method: :delete }, class: "text-gray-600 hover:text-red-600 transition" %>
           <% else %>
