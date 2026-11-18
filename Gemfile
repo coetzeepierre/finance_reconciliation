@@ -63,3 +63,5 @@ group :test do
 end
 
 gem "money-rails", "~> 3.0"
+
+gem "roo", "~> 4.0"
