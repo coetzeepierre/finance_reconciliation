@@ -11,8 +11,10 @@ module Reconciliation
     end
 
     def call
+      # pessimistic lock on account
       account.with_lock do
         raw_line.reload
+        # STOP WHEN NOT PENDING
         return unless raw_line.pending?
 
         if reversal_line?
@@ -39,14 +41,16 @@ module Reconciliation
 
     def process_reversal!
       target_id = target_reversal_source_id
+
+      # Search first by raw statement line source_id, fallback to raw_statement_line id
       original_movement = ReconciledMovement
-                            .joins(:raw_statement_line)
-                            .find_by(
-                              tenant_id: tenant.id,
-                              account_id: account.id,
-                              currency: raw_line.currency,
-                              raw_statement_lines: { source_id: target_id }
-                            )
+        .joins(:raw_statement_line)
+        .find_by(
+          tenant_id: tenant.id,
+          account_id: account.id,
+          currency: raw_line.currency,
+          raw_statement_lines: { source_id: target_id }
+        )
 
       if original_movement &&
          original_movement.amount_cents == -raw_line.amount_cents &&
