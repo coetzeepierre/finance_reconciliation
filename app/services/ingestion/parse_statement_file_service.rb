@@ -66,8 +66,8 @@ module Ingestion
           source_id: row[:source_id].to_s.strip.presence,
           currency: currency,
           amount_cents: amount_cents,
-          value_date: parse_value_date(row[:value_date]),
-          posting_ts: parse_value_date(row[:posting_ts]),
+          value_date: row[:value_date],
+          posting_ts: row[:posting_ts],
           category: row[:category].to_s.strip.presence,
           description: row[:description].to_s.strip.presence
         )
@@ -104,30 +104,6 @@ module Ingestion
 
       # Monetize.parse! handles currency subunit exponents (0 for JPY, 2 for USD/EUR/GBP)
       Monetize.parse!(cleaned, currency).cents
-    end
-
-    def parse_value_date(raw_date)
-      case raw_date
-      when Date, DateTime, Time
-        raw_date.to_date
-      when String
-        str = raw_date.strip
-        return nil if str.blank?
-
-        if str.match?(%r{\A\d{2}/\d{2}/\d{4}\z})
-          Date.strptime(str, "%d/%m/%Y")
-        else
-          begin
-            Date.iso8601(str)
-          rescue ArgumentError, Date::Error
-            Date.parse(str)
-          end
-        end
-      else
-        raise ArgumentError, "Unparseable date: #{raw_date.inspect}"
-      end
-    rescue ArgumentError, Date::Error
-      raise ArgumentError, "Unparseable date: #{raw_date.inspect}"
     end
   end
 end
